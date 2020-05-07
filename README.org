@@ -1,4 +1,7 @@
 #+TITLE: CircleCI Cookbook
 
 The purpose of this repository is to showcase different common use
-cases of CircleCI config.
+cases of CircleCI config. All example configuration files are heavily
+annotated.
+
+Most of these examples rely on version 2.1+ features.
