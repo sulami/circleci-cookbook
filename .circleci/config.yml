@@ -1,0 +1,25 @@
+version: 2.1
+
+orbs:
+  cli: circleci/circleci-cli@0.1.8
+
+jobs:
+  verify-configs:
+    executor:
+      name: cli/default
+      tag: alpine
+    steps:
+      - checkout
+      - run:
+          name: Verify all example configs
+          command: |
+            for config in *.yml; do
+              echo "verifying $config..."
+              circleci config validate $config
+              echo "  valid!"
+            done
+
+workflows:
+  verify:
+    jobs:
+      - verify-configs

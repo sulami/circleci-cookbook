@@ -1,0 +1,39 @@
+version: 2.1
+
+# Imagine you want to have a workflow that does something you only
+# want done manually. An easy way to accomplish that is to use a
+# pipeline parameter and gate the workflow's execution on that.
+
+# First, set up a boolean parameter defaulting to false.
+parameters:
+  run-workflow:
+    type: boolean
+    default: false
+
+workflows:
+
+  # This workflow will only run if the run-workflow parameter has been
+  # set to true. To do so, use the pipeline trigger API and include
+  # this in the payload:
+  # {"parameters": {"run-workflow": true}}
+  api-only-workflow:
+    when: << pipeline.parameters.run-workflow >>
+    jobs:
+      - my-job
+
+  # This workflow will exactly when the other one won't, so that you
+  # don't run extra work when triggering the manual action. This is
+  # where e.g. your regular test suite can live.
+  push-workflow:
+    unless: << pipeline.parameters.run-workflow >>
+    jobs:
+      - my-job
+
+# ------------------------------------------------------------------------------
+
+jobs:
+  my-job:
+    docker:
+      - image: cimg/base:stable
+    steps:
+      - checkout

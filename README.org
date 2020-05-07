@@ -1,0 +1,4 @@
+#+TITLE: CircleCI Cookbook
+
+The purpose of this repository is to showcase different common use
+cases of CircleCI config.
