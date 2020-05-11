@@ -1,0 +1,26 @@
+version: 2.1
+
+# This config has a step in a job which only runs on a specific
+# branch, in this case master. Branch filters are not available job
+# steps, but we can use pipeline values to build our own.
+
+jobs:
+  my-job:
+    docker:
+      - image: cimg/base:stable
+    steps:
+      - checkout
+      - when:
+          condition:
+            equal: [ master, << pipeline.git.tag >> ]
+          steps:
+            - run: echo "I am on master"
+
+# ------------------------------------------------------------------------------
+
+workflows:
+  my-workflow:
+    jobs:
+      - my-job
+
+
