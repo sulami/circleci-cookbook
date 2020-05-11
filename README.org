@@ -1,5 +1,8 @@
 #+TITLE: CircleCI Cookbook
 
+#+caption: CI status badge
+[[https://circleci.com/gh/sulami/circleci-cookbook.svg?style=svg]]
+
 The purpose of this repository is to showcase different common use
 cases of CircleCI config. All example configuration files are heavily
 annotated.
