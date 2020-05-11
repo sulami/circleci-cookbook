@@ -1,0 +1,21 @@
+version: 2.1
+
+# This is a workflow that only runs on the master branch. While there
+# are built-in branch filters, we can use pipeline features to build a
+# more flexible branch selection.
+
+workflows:
+  master-only-workflow:
+    when:
+      equal: [ master, << pipeline.git.branch >> ]
+    jobs:
+      - my-job
+
+# ------------------------------------------------------------------------------
+
+jobs:
+  my-job:
+    docker:
+      - image: cimg/base:stable
+    steps:
+      - checkout
