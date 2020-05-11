@@ -7,4 +7,7 @@ The purpose of this repository is to showcase different common use
 cases of CircleCI config. All example configuration files are heavily
 annotated.
 
-Most of these examples rely on version 2.1+ features.
+Configs are also validated by CircleCI, so that each example presents a
+valid starting point for your own config. For that reason there is
+often a horizontal line included which separates the interesting parts
+from the rest required to complete a valid config.
