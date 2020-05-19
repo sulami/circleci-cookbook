@@ -1,0 +1,42 @@
+version: 2.1
+
+# If you want to select a workflow to run via the API from the set of
+# available workflows, you can use the following pattern.
+
+# The pipeline parameter will default to build, causing the build
+# workflow to run by default and on git pushes.
+
+# You can use these API parameter to run the report workflow instead:
+# {"parameters": {"action": "report"}}
+
+parameters:
+  action:
+    type: enum
+    enum: [build, report]
+    default: build
+
+jobs:
+  build:
+    machine: true
+    steps:
+      - checkout
+      - run: ./run-tests.sh
+
+  report:
+    machine: true
+    steps:
+      - checkout
+      - run: ./create-report.sh
+
+workflows:
+  build:
+    when:
+      equal: [ build, << pipeline.parameters.action >> ]
+    jobs:
+      - build
+
+  report:
+    when:
+      equal: [ report, << pipeline.parameters.action >> ]
+    jobs:
+      - report
