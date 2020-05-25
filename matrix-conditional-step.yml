@@ -1,0 +1,53 @@
+version: 2.1
+
+# This example is lifted almost directly from the matrix job
+# announcement (https://circleci.com/blog/circleci-matrix-jobs/). It
+# is modified here to use the prebuilt node image for the linux half
+# of the matrix, which means we don't need to install node in those
+# containers.
+
+# To that end, use a `when` step which we match on the executor
+# selected by the matrix, and gate the node installation step on that.
+
+executors:
+  linux-14:
+    docker:
+      - image: cimg/node:14.0
+  linux-13:
+    docker:
+      - image: cimg/node:13.13
+  macos: &macos
+    macos:
+      xcode: 11.4
+
+orbs:
+  node: circleci/node@2.0.0
+
+jobs:
+  test:
+    parameters:
+      os:
+        type: executor
+      node-version:
+        type: string
+    executor: << parameters.os >>
+    steps:
+      - checkout
+      - when:
+          condition:
+            not:
+              equal: [ *macos, << parameters.os >> ]
+          steps:
+            - node/install:
+                node-version: << parameters.node-version >>
+                install-yarn: true
+      - run: yarn test
+
+workflows:
+  all-tests:
+    jobs:
+      - test:
+          matrix:
+            parameters:
+              os: [linux-13, linux-14, macos]
+              node-version: ["13.13.0", "14.0.0"]
