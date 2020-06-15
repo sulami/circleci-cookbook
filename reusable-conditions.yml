@@ -1,0 +1,74 @@
+version: 2.1
+
+# This demonstrates reusable logic expressions for use in conditions.
+# We use YAML aliases for this purpose, which is expanded before
+# configuration is compiled.
+
+# The overall construction is somewhat artificial, but only serves to
+# showcase the reuse of conditions.
+
+# Placing them under an arbitrarily named top-level key keeps them
+# together, but the actual location does not matter (as long as the
+# top-level key does not conflict with one used by CircleCI).
+conditions:
+
+  # This condition is the same throughout the pipeline and just saves
+  # some duplication.
+  master-only: &master-only
+    equal: [master, << pipeline.git.branch >>]
+
+  # This condition differs depending on the location it is used in,
+  # due to the order of
+  # [ YAML expansion -> configuration compilation ].
+  # Specifically, this is true if the branch is either master, or the
+  # override job parameter is set.
+  master-or-override: &master-or-override
+    or:
+      - *master-only
+      - << parameters.override >>
+
+jobs:
+  my-job:
+    docker:
+      - image: cimg/base:stable
+    parameters:
+      override:
+        type: boolean
+        default: false
+    steps:
+      - checkout
+      - run: ./test.sh
+      - when:
+          condition: *master-or-override
+          steps:
+            - run:
+                name: Deploy Staging
+                command: ./deploy_staging.sh
+      - when:
+          condition: *master-only
+          steps:
+            - run:
+                name: Deploy Prod
+                command: ./deploy_prod.sh
+
+# We trigger the single job we have with two different argument sets.
+# This way we execute the following actions:
+
+# branch  | actions
+# --------+--------
+# master  | test + deploy staging + deploy prod
+# staging | test + deploy staging
+# <other> | test
+
+workflows:
+  build:
+    jobs:
+      - my-job:
+          filters:
+            branches:
+              ignore: staging
+      - my-job:
+          override: true
+          filters:
+            branches:
+              ignore: staging
