@@ -35,8 +35,7 @@ jobs:
       - checkout
       - when:
           condition:
-            not:
-              equal: [ *macos, << parameters.os >> ]
+            equal: [ *macos, << parameters.os >> ]
           steps:
             - node/install:
                 node-version: << parameters.node-version >>
